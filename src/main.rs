@@ -165,12 +165,11 @@ fn spawn_worker(queue: Data<Queue>, sessions: Data<Sessions>) {
             let exec_result = match job.module.as_str() {
                 "classify_versions" => classify_versions_task().await,
                 "original_download" => {
-                    let mc_home = std::path::Path::new(
-                        r"C:\Users\smh20\Documents\Rust\RTAPI\.minecraft"
-                    );
+                    let current_path = std::env::current_dir().expect("Failed to get current directory");
+                    let mc_home = current_path.join(".minecraft");
                     // 如果前端没带版本就用默认
                     let ver = job.version.as_deref().unwrap_or("1.20.4");
-                    original_download_task(ver, mc_home).await
+                    original_download_task(ver, &mc_home).await
                 }
                 unknown => Ok(format!("Unknown module: {unknown}")),
             };
